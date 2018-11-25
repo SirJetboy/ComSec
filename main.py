@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-def chiffrer_signer():
+#def chiffrer_signer():
 	
 	
 
