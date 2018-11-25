@@ -3,7 +3,7 @@ import random
 
 message = "question"
 bin_message = str(bin(int(binascii.hexlify(bytes(message, "utf8")), 16))[2:])
-print(message)
+# print(message)
 while len(bin_message) % 64 != 0:
     bin_message = "0" + bin_message
 original_key = ''
@@ -23,6 +23,7 @@ while len(key) != 52:
             key_bis = key_bis[16:]
     original_key = original_key[-25:] + original_key[:-25]
     key_bis = original_key
+print(*key)
 
 bloc = []
 while len(bin_message) != 0:
@@ -59,40 +60,41 @@ def inv(a):
     return bin(x0 % mod)[2:][-16:].zfill(16)
 
 
-def code(bloc, key):
+def code(bloc_temp, key_temp):
     temp = ['', '']
     for i in range(8):
         # 1
-        bloc[0] = mul(bloc[0], key[0 + i * 6])
+        bloc_temp[0] = mul(bloc_temp[0], key_temp[0 + i * 6])
         # 2
-        bloc[1] = add(bloc[1], key[1 + i * 6])
+        bloc_temp[1] = add(bloc_temp[1], key_temp[1 + i * 6])
         # 3
-        bloc[2] = add(bloc[2], key[2 + i * 6])
+        bloc_temp[2] = add(bloc_temp[2], key_temp[2 + i * 6])
         # 4
-        bloc[3] = mul(bloc[3], key[3 + i * 6])
+        bloc_temp[3] = mul(bloc_temp[3], key_temp[3 + i * 6])
         # 5
-        temp[0] = xor(bloc[0], bloc[2])
+        temp[0] = xor(bloc_temp[0], bloc_temp[2])
         # 6
-        temp[1] = xor(bloc[1], bloc[3])
+        temp[1] = xor(bloc_temp[1], bloc_temp[3])
         # 7
-        temp[0] = mul(temp[0], key[4 + i * 6])
+        temp[0] = mul(temp[0], key_temp[4 + i * 6])
         # 8
         temp[1] = add(temp[1], temp[0])
         # 9
-        temp[1] = mul(temp[1], key[5 + i * 6])
+        temp[1] = mul(temp[1], key_temp[5 + i * 6])
         # 10
         temp[0] = add(temp[0], temp[1])
         # 11
-        bloc[0] = xor(bloc[0], temp[1])
+        bloc_temp[0] = xor(bloc_temp[0], temp[1])
         # 12
-        bloc[2] = xor(bloc[2], temp[1])
+        bloc_temp[2] = xor(bloc_temp[2], temp[1])
         # 13
-        bloc[1] = xor(bloc[1], temp[0])
+        bloc_temp[1] = xor(bloc_temp[1], temp[0])
         # 14
-        bloc[3] = xor(bloc[3], temp[0])
+        bloc_temp[3] = xor(bloc_temp[3], temp[0])
         # 15
-        bloc[1], bloc[2] = bloc[2], bloc[1]
-    return bloc
+        bloc_temp[1], bloc_temp[2] = bloc_temp[2], bloc_temp[1]
+    return bloc_temp
+
 
 
 # cipher
@@ -121,28 +123,27 @@ bloc[2] = add(bloc[2], opp(key[50]))
 # 4
 bloc[3] = mul(bloc[3], inv(key[51]))
 
-temp = key
-for i in range(8):
-    key[0 + i * 6] = inv(temp[48 - i * 6])
-    key[1 + i * 6] = opp(temp[49 - i * 6])
-    key[2 + i * 6] = opp(temp[50 - i * 6])
-    key[3 + i * 6] = inv(temp[51 - i * 6])
-    key[4 + i * 6] = temp[46 - i * 6]
-    key[5 + i * 6] = temp[47 - i * 6]
-key[48] = inv(temp[0])
-key[49] = opp(temp[1])
-key[50] = opp(temp[2])
-key[51] = inv(temp[3])
 
-bloc = code(bloc, key)
+dec_key = []
+for i in range(8):
+    dec_key.append((inv(key[48 - i * 6])))
+    dec_key.append((opp(key[49 - i * 6])))
+    dec_key.append((opp(key[50 - i * 6])))
+    dec_key.append((inv(key[51 - i * 6])))
+    dec_key.append((key[46 - i * 6]))
+    dec_key.append((key[47 - i * 6]))
+dec_key.append(inv(key[0]))
+dec_key.append(opp(key[1]))
+dec_key.append(opp(key[2]))
+dec_key.append(inv(key[3]))
+
+print(*key)
+print(*dec_key)
+
+bloc = code(bloc, dec_key)
 
 print("deciphred bin")
 print(*bloc)
 
-#print(b)
-#print(c)
-#print(len(k))
-#print(len(blocs))
 #message = binascii.unhexlify('%x' % int('0b' + bin_message, 2)).decode("utf-8")
-#print("bin_message = " + bin_message)
 #print("message = " + message)
