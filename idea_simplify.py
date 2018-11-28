@@ -26,11 +26,13 @@ key = ['0011111101010100', '1010010111011011', '1001000110011110', '100100111110
        '1010110110101000', '0111101100101101', '0011010111100101', '0111111110000001',
        '1111001010111111', '1100000010011111']
 
-
 bloc = []
 while len(bin_message) != 0:
     bloc.append(bin_message[:16])
     bin_message = bin_message[16:]
+
+print("original bin")
+print(*bloc)
 
 
 def add(a, b):
@@ -39,10 +41,6 @@ def add(a, b):
 
 def mul(a, b):
     return bin(int(a, 2) * int(b, 2) % 65537)[2:][-16:].zfill(16)
-
-# print('0111000101110101')
-# print('0011111101010100')
-# print(mul('0111000101110101', '0011111101010100'))
 
 
 def xor(a, b):
@@ -92,7 +90,6 @@ key = ['0011111101010100', '1010010111011011', '1001000110011110', '100100111110
 bloc = code(bloc, key)
 # 1
 
-print(*bloc)
 bloc[1], bloc[2] = bloc[2], bloc[1]
 # 2
 bloc[0] = mul(bloc[0], key[6])
@@ -103,21 +100,8 @@ bloc[2] = add(bloc[2], key[8])
 # 5
 bloc[3] = mul(bloc[3], key[9])
 
-# print("ciphered bin")
-# print(*bloc)
-
-dkey = []
-
-dkey.append(inv(key[0]))
-dkey.append(opp(key[1]))
-dkey.append(opp(key[2]))
-dkey.append(inv(key[3]))
-dkey.append(key[4])
-dkey.append(key[5])
-dkey.append(inv(key[6]))
-dkey.append(opp(key[7]))
-dkey.append(opp(key[8]))
-dkey.append(inv(key[9]))
+print("ciphered bin")
+print(*bloc)
 
 # decipher
 # 1
@@ -128,24 +112,32 @@ bloc[1] = add(bloc[1], opp(key[7]))
 bloc[2] = add(bloc[2], opp(key[8]))
 # 4
 bloc[3] = mul(bloc[3], inv(key[9]))
-# bloc[1], bloc[2] = bloc[2], bloc[1]
-# print(*bloc)
+
+
+dkey = []
+
+dkey.append(inv(key[6]))
+dkey.append(opp(key[7]))
+dkey.append(opp(key[8]))
+dkey.append(inv(key[9]))
+dkey.append(key[4])
+dkey.append(key[5])
+dkey.append(inv(key[0]))
+dkey.append(opp(key[1]))
+dkey.append(opp(key[2]))
+dkey.append(inv(key[3]))
+
 bloc = code(bloc, dkey)
 
-
-# print("deciphred bin")
+print("deciphred bin")
 print(*bloc)
-# print(*key)
 
-# print("XOR")
-# print(bloc[2])
-# print(key[1])
-# print(xor(bloc[2], key[1]))
+print("original key")
+print(*key)
 
-#print(b)
-#print(c)
-#print(len(k))
-#print(len(blocs))
-#message = binascii.unhexlify('%x' % int('0b' + bin_message, 2)).decode("utf-8")
-#print("bin_message = " + bin_message)
-#print("message = " + message)
+print("decipher key")
+print(*dkey)
+
+# message = binascii.unhexlify('%x' % int('0b' + bloc, 2)).decode("utf-8")
+# print("bin_message = " + bin_message)
+# print("message = " + message)
