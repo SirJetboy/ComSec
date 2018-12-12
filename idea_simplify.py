@@ -113,8 +113,12 @@ bloc[2] = add(bloc[2], opp(key[8]))
 # 4
 bloc[3] = mul(bloc[3], inv(key[9]))
 
+print("foejzngvozejgnbezkjgbzej")
 
+print(*bloc)
 dkey = []
+
+
 
 dkey.append(inv(key[6]))
 dkey.append(opp(key[7]))
