@@ -1,44 +1,71 @@
-import binascii
 import random
 
-message = "question"
-bin_message = str(bin(int(binascii.hexlify(bytes(message, "utf8")), 16))[2:])
-# print(message)
-while len(bin_message) % 64 != 0:
-    bin_message = "0" + bin_message
-original_key = ''
-# for i in range(128):
-#    original_key = str(random.randint(0, 1)) + original_key
 
-original_key = "00111000111111100001011000100011101111100110111011011010110011110100010010010010011100000001000000101101111100111001100101011100"
+def message_to_bin(message):
+    bin_message = ''.join([bin(ord(x))[2:].zfill(8) for x in message])
+    while len(bin_message) % 64 != 0:
+        bin_message = "0" + bin_message
 
-# print("--------------bin_message---------")
-# print(bin_message)
-# print("----------------------------------")
-key_bis = original_key
-key = []
+    return bin_message
 
-# add a variable to manage length keys
-while len(key) != 52:
-    while key_bis:
-        key.append(key_bis[:16])
-        if len(key_bis) == 16 or len(key) == 52:
-            key_bis = ''
-        else:
-            key_bis = key_bis[16:]
-    original_key = original_key[-25:] + original_key[:-25]
+
+def bin_to_message(bin_blocs):
+    bin_message = ''.join(bin_blocs)
+    bin_blocs = [bin_message[i:i + 8] for i in range(0, len(bin_message), 8)]
+    return ''.join([chr(int(x, 2)) for x in bin_blocs])
+
+
+def generate_random_key(key_size):
+    original_key = ''
+    for i in range(key_size):
+        original_key = str(random.randint(0, 1)) + original_key
+    return original_key
+
+
+def create_encryption_keys(original_key):
     key_bis = original_key
+    key = []
+    while len(key) != 52:
+        while key_bis:
+            key.append(key_bis[:16])
+            if len(key_bis) == 16 or len(key) == 52:
+                key_bis = ''
+            else:
+                key_bis = key_bis[16:]
+        original_key = original_key[-25:] + original_key[:-25]
+        key_bis = original_key
+    return key
 
-subkey_list = [int(subkey, 2) for subkey in key]
-# print(subkey_list)
 
-bloc = []
-while len(bin_message) != 0:
-    bloc.append(bin_message[:16])
-    bin_message = bin_message[16:]
-print("original")
-print([int(subkey, 2) for subkey in bloc])
-# print(*bloc)
+def create_decryption_keys(original_key):
+    key = create_encryption_keys(original_key)
+    dec_key = list()
+    dec_key.append((inv(key[48])))
+    dec_key.append((opp(key[49])))
+    dec_key.append((opp(key[50])))
+    dec_key.append((inv(key[51])))
+    dec_key.append((key[46]))
+    dec_key.append((key[47]))
+    for i in range(7):
+        dec_key.append((inv(key[42 - i * 6])))
+        dec_key.append((opp(key[44 - i * 6])))
+        dec_key.append((opp(key[43 - i * 6])))
+        dec_key.append((inv(key[45 - i * 6])))
+        dec_key.append((key[40 - i * 6]))
+        dec_key.append((key[41 - i * 6]))
+    dec_key.append(inv(key[0]))
+    dec_key.append(opp(key[1]))
+    dec_key.append(opp(key[2]))
+    dec_key.append(inv(key[3]))
+    return dec_key
+
+
+def create_blocs(bin_message):
+    bloc = []
+    while len(bin_message) != 0:
+        bloc.append(bin_message[:16])
+        bin_message = bin_message[16:]
+    return bloc
 
 
 def add(a, b):
@@ -46,6 +73,10 @@ def add(a, b):
 
 
 def mul(a, b):
+    if int(a, 2) == 0:
+        a = '10000000000000000'
+    if int(b, 2) == 0:
+        a = '10000000000000000'
     return bin(int(a, 2) * int(b, 2) % 65537)[2:][-16:].zfill(16)
 
 
@@ -68,131 +99,71 @@ def inv(a):
     return bin(x0 % mod)[2:][-16:].zfill(16)
 
 
-def code(bloc_temp, key_temp):
+def code(bloc, key):
     temp = ['', '']
     for i in range(8):
         # 1
-        bloc_temp[0] = mul(bloc_temp[0], key_temp[0 + i * 6])
+        bloc[0] = mul(bloc[0], key[0 + i * 6])
         # 2
-        bloc_temp[1] = add(bloc_temp[1], key_temp[1 + i * 6])
+        bloc[1] = add(bloc[1], key[1 + i * 6])
         # 3
-        bloc_temp[2] = add(bloc_temp[2], key_temp[2 + i * 6])
+        bloc[2] = add(bloc[2], key[2 + i * 6])
         # 4
-        bloc_temp[3] = mul(bloc_temp[3], key_temp[3 + i * 6])
+        bloc[3] = mul(bloc[3], key[3 + i * 6])
         # 5
-        temp[0] = xor(bloc_temp[0], bloc_temp[2])
+        temp[0] = xor(bloc[0], bloc[2])
         # 6
-        temp[1] = xor(bloc_temp[1], bloc_temp[3])
+        temp[1] = xor(bloc[1], bloc[3])
         # 7
-        temp[0] = mul(temp[0], key_temp[4 + i * 6])
+        temp[0] = mul(temp[0], key[4 + i * 6])
         # 8
         temp[1] = add(temp[1], temp[0])
         # 9
-        temp[1] = mul(temp[1], key_temp[5 + i * 6])
+        temp[1] = mul(temp[1], key[5 + i * 6])
         # 10
         temp[0] = add(temp[0], temp[1])
         # 11
-        bloc_temp[0] = xor(bloc_temp[0], temp[1])
+        bloc[0] = xor(bloc[0], temp[1])
         # 12
-        bloc_temp[2] = xor(bloc_temp[2], temp[1])
+        bloc[2] = xor(bloc[2], temp[1])
         # 13
-        bloc_temp[1] = xor(bloc_temp[1], temp[0])
+        bloc[1] = xor(bloc[1], temp[0])
         # 14
-        bloc_temp[3] = xor(bloc_temp[3], temp[0])
+        bloc[3] = xor(bloc[3], temp[0])
         # 15
-        bloc_temp[1], bloc_temp[2] = bloc_temp[2], bloc_temp[1]
-    return bloc_temp
+        bloc[1], bloc[2] = bloc[2], bloc[1]
+    # 1
+    bloc[1], bloc[2] = bloc[2], bloc[1]
+    # 2
+    bloc[0] = mul(bloc[0], key[48])
+    # 3
+    bloc[1] = add(bloc[1], key[49])
+    # 4
+    bloc[2] = add(bloc[2], key[50])
+    # 5
+    bloc[3] = mul(bloc[3], key[51])
+    return bloc
 
 
-# cipher
-bloc = code(bloc, key)
-# print([int(subkey, 2) for subkey in bloc])
-# 1
-bloc[1], bloc[2] = bloc[2], bloc[1]
-# 2
-bloc[0] = mul(bloc[0], key[48])
-# 3
-bloc[1] = add(bloc[1], key[49])
-# 4
-bloc[2] = add(bloc[2], key[50])
-# 5
-bloc[3] = mul(bloc[3], key[51])
-
-print("ciphered")
-print([int(subkey, 2) for subkey in bloc])
-# print(*bloc)
-
-# subkey_list = [int(subkey, 2) for subkey in bloc]
-# print(subkey_list)
+def cipher(message, key):
+    bin_message = message_to_bin(message)
+    blocs = create_blocs(bin_message)
+    key_list = create_encryption_keys(key)
+    ciphered_blocs = list()
+    for i in range(len(blocs)//4):
+        ciphered_blocs.extend(code(blocs[i * 4:4 + i * 4], key_list))
+    ciphered_message = bin_to_message(ciphered_blocs)
+    return ciphered_message
 
 
-# decipher
-def decode(bloc_temp, key_temp):
-    temp = ['', '']
-    for i in range(8):
-        # 1
-        bloc_temp[0] = mul(bloc_temp[0], key_temp[0 + i * 6])
-        # 2
-        bloc_temp[1] = add(bloc_temp[1], key_temp[1 + i * 6])
-        # 3
-        bloc_temp[2] = add(bloc_temp[2], key_temp[2 + i * 6])
-        # 4
-        bloc_temp[3] = mul(bloc_temp[3], key_temp[3 + i * 6])
-        # 5
-        temp[0] = xor(bloc_temp[0], bloc_temp[2])
-        # 6
-        temp[1] = xor(bloc_temp[1], bloc_temp[3])
-        # 7
-        temp[0] = mul(temp[0], key_temp[4 + i * 6])
-        # 8
-        temp[1] = add(temp[1], temp[0])
-        # 9
-        temp[1] = mul(temp[1], key_temp[5 + i * 6])
-        # 10
-        temp[0] = add(temp[0], temp[1])
-        # 11
-        bloc_temp[0] = xor(bloc_temp[0], temp[1])
-        # 12
-        bloc_temp[2] = xor(bloc_temp[2], temp[1])
-        # 13
-        bloc_temp[1] = xor(bloc_temp[1], temp[0])
-        # 14
-        bloc_temp[3] = xor(bloc_temp[3], temp[0])
-        # 15
-        bloc_temp[1], bloc_temp[2] = bloc_temp[2], bloc_temp[1]
-    return bloc_temp
+def decipher(message, key):
+    bin_message = message_to_bin(message)
+    blocs = create_blocs(bin_message)
+    key_list = create_decryption_keys(key)
+    deciphered_blocs = list()
+    for i in range(len(blocs) // 4):
+        deciphered_blocs.extend(code(blocs[i * 4:4 + i * 4], key_list))
+    deciphered_message = bin_to_message(deciphered_blocs)
+    return deciphered_message
 
 
-dec_key = []
-for i in range(8):
-    dec_key.append((inv(key[48 - i * 6])))
-    dec_key.append((opp(key[49 - i * 6])))
-    dec_key.append((opp(key[50 - i * 6])))
-    dec_key.append((inv(key[51 - i * 6])))
-    dec_key.append((key[46 - i * 6]))
-    dec_key.append((key[47 - i * 6]))
-dec_key.append(inv(key[0]))
-dec_key.append(opp(key[1]))
-dec_key.append(opp(key[2]))
-dec_key.append(inv(key[3]))
-
-# print(*key)
-# print(*dec_key)
-
-# 1
-bloc[0] = mul(bloc[0], dec_key[0])
-# 2
-bloc[1] = add(bloc[1], dec_key[1])
-# 3
-bloc[2] = add(bloc[2], dec_key[2])
-# 4
-bloc[3] = mul(bloc[3], dec_key[3])
-
-# print([int(subkey, 2) for subkey in bloc])
-bloc = decode(bloc, dec_key)
-
-print("deciphred")
-# print(*bloc)
-print([int(subkey, 2) for subkey in bloc])
-#message = binascii.unhexlify('%x' % int('0b' + bin_message, 2)).decode("utf-8")
-#print("message = " + message)
