@@ -152,12 +152,14 @@ def cipher(message, key):
     ciphered_blocs = list()
     for i in range(len(blocs)//4):
         ciphered_blocs.extend(code(blocs[i * 4:4 + i * 4], key_list))
-    ciphered_message = bin_to_message(ciphered_blocs)
-    return ciphered_message
+    # ciphered_message = bin_to_message(ciphered_blocs)
+    # return ciphered_message
+    return ''.join(ciphered_blocs)
 
 
 def decipher(message, key):
-    bin_message = message_to_bin(message)
+    # bin_message = message_to_bin(message)
+    bin_message = message
     blocs = create_blocs(bin_message)
     key_list = create_decryption_keys(key)
     deciphered_blocs = list()
