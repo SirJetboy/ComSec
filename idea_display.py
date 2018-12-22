@@ -29,8 +29,7 @@ def choose_file():
     while not Path(path).is_file():
         print("Please enter the name of the file:")
         path = "idea/" + input()
-
-    file = open(path, "r", encoding="utf8")
+    file = open(path, "r", encoding="utf-8")
     content = file.read()
     file.close()
     return content
@@ -43,20 +42,28 @@ def cipher(key):
         print("Please enter the name of the output file:")
         path = input()
     path = "idea/" + path
-    file = open(path, "w", encoding="utf8")
-    ciphered = idea.cipher(message, key)
+    file = open(path, "w", encoding="utf-8")
+    ciphered = idea.cipher(message, key).replace("?", "??").replace(chr(13), "?r")
     file.write(ciphered)
     file.close()
 
 
 def decipher(key):
     ciphered = choose_file()
+    i = 0
+    while i != len(ciphered):
+        if ciphered[i] == "?":
+            if ciphered[i + 1] == "r":
+                ciphered = ciphered[:i] + chr(13) + ciphered[i + 2:]
+            else:
+                ciphered = ciphered[:i + 1] + ciphered[i + 2:]
+        i += 1
     path = ''
     while not path:
         print("Please enter the name of the output file:")
         path = input()
     path = "idea/" + path
-    file = open(path, "w", encoding="utf8")
+    file = open(path, "w", encoding="utf-8")
     deciphered = idea.decipher(ciphered, key)
     file.write(deciphered)
     file.close()
