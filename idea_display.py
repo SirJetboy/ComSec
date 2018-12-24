@@ -35,7 +35,7 @@ def choose_file():
     return content
 
 
-def cipher(key):
+def cipher(key, mode):
     message = choose_file()
     path = ''
     while not path:
@@ -43,12 +43,12 @@ def cipher(key):
         path = input()
     path = "idea/" + path
     file = open(path, "w", encoding="utf-8")
-    ciphered = idea.cipher(message, key).replace("?", "??").replace(chr(13), "?r")
+    ciphered = idea.cipher(message, key, mode).replace("?", "??").replace(chr(13), "?r")
     file.write(ciphered)
     file.close()
 
 
-def decipher(key):
+def decipher(key, mode):
     ciphered = choose_file()
     i = 0
     while i != len(ciphered):
@@ -64,7 +64,7 @@ def decipher(key):
         path = input()
     path = "idea/" + path
     file = open(path, "w", encoding="utf-8")
-    deciphered = idea.decipher(ciphered, key)
+    deciphered = idea.decipher(ciphered, key, mode)
     file.write(deciphered)
     file.close()
 
@@ -74,11 +74,15 @@ def main():
     while choice not in ('c', 'd'):
         print("Please enter c to cipher or d to decipher:")
         choice = input()
+    mode = ''
+    while mode not in ('ecb', 'cbc'):
+        print("Please the block cipher mode of operation (ecb or cbc):")
+        mode = input()
     key_dec = choose_key_size(choice)
     if choice == 'c':
-        cipher(key_dec)
+        cipher(key_dec, mode)
     else:
-        decipher(key_dec)
+        decipher(key_dec, mode)
     print("Success")
 
 

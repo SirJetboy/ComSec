@@ -145,24 +145,46 @@ def code(bloc, key):
     return bloc
 
 
-def cipher(message, key):
+def cipher(message, key, mode):
     bin_message = message_to_bin(message)
     blocs = create_blocs(bin_message)
     key_list = create_encryption_keys(key)
     ciphered_blocs = list()
     for i in range(len(blocs)//4):
+        if mode == 'cbc':
+            if i == 0:
+                blocs[0] = xor(blocs[0], '0' * 16)
+                blocs[1] = xor(blocs[1], '0' * 16)
+                blocs[2] = xor(blocs[2], '0' * 16)
+                blocs[3] = xor(blocs[3], '0' * 16)
+            else:
+                blocs[0 + i * 4] = xor(blocs[0 + i * 4], ciphered_blocs[-4])
+                blocs[1 + i * 4] = xor(blocs[1 + i * 4], ciphered_blocs[-3])
+                blocs[2 + i * 4] = xor(blocs[2 + i * 4], ciphered_blocs[-2])
+                blocs[3 + i * 4] = xor(blocs[3 + i * 4], ciphered_blocs[-1])
         ciphered_blocs.extend(code(blocs[i * 4:4 + i * 4], key_list))
     ciphered_message = bin_to_message(ciphered_blocs)
     return ciphered_message
 
 
-def decipher(message, key):
+def decipher(message, key, mode):
     bin_message = message_to_bin(message)
     blocs = create_blocs(bin_message)
     key_list = create_decryption_keys(key)
     deciphered_blocs = list()
     for i in range(len(blocs) // 4):
         deciphered_blocs.extend(code(blocs[i * 4:4 + i * 4], key_list))
+        if mode == 'cbc':
+            if i == 0:
+                deciphered_blocs[0] = xor(deciphered_blocs[0], '0' * 16)
+                deciphered_blocs[1] = xor(deciphered_blocs[1], '0' * 16)
+                deciphered_blocs[2] = xor(deciphered_blocs[2], '0' * 16)
+                deciphered_blocs[3] = xor(deciphered_blocs[3], '0' * 16)
+            else:
+                deciphered_blocs[-4] = xor(deciphered_blocs[-4], blocs[i * 4 - 4])
+                deciphered_blocs[-3] = xor(deciphered_blocs[-3], blocs[i * 4 - 3])
+                deciphered_blocs[-2] = xor(deciphered_blocs[-2], blocs[i * 4 - 2])
+                deciphered_blocs[-1] = xor(deciphered_blocs[-1], blocs[i * 4 - 1])
     deciphered_message = bin_to_message(deciphered_blocs)
     return deciphered_message
 
