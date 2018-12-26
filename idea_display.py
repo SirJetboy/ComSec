@@ -29,7 +29,7 @@ def choose_file():
     while not Path(path).is_file():
         print("Please enter the name of the file:")
         path = "idea/" + input()
-    file = open(path, "r", encoding="utf-8")
+    file = open(path, "r", encoding="ISO-8859-1")
     content = file.read()
     file.close()
     return content
@@ -42,7 +42,7 @@ def cipher(key, mode):
         print("Please enter the name of the output file:")
         path = input()
     path = "idea/" + path
-    file = open(path, "w", encoding="utf-8")
+    file = open(path, "w", encoding="ISO-8859-1")
     ciphered = idea.cipher(message, key, mode).replace("?", "??").replace(chr(13), "?r")
     file.write(ciphered)
     file.close()
@@ -63,7 +63,7 @@ def decipher(key, mode):
         print("Please enter the name of the output file:")
         path = input()
     path = "idea/" + path
-    file = open(path, "w", encoding="utf-8")
+    file = open(path, "w", encoding="ISO-8859-1")
     deciphered = idea.decipher(ciphered, key, mode)
     file.write(deciphered)
     file.close()
@@ -76,7 +76,7 @@ def main():
         choice = input()
     mode = ''
     while mode not in ('ecb', 'cbc'):
-        print("Please the block cipher mode of operation (ecb or cbc):")
+        print("Please enter the block cipher mode of operation (ecb or cbc):")
         mode = input()
     key_dec = choose_key_size(choice)
     if choice == 'c':
