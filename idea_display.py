@@ -10,7 +10,7 @@ def choose_key_size(choice):
         if key_size.isdigit():
             key_size = int(key_size)
     if choice == 'c':
-        print("Please enter g to generate a key:")
+        print("Please enter g to generate a key or anything else if not:")
         if input() == 'g':
             key = idea.generate_random_key(key_size)
             print("key =", int(key, 2))
@@ -75,8 +75,8 @@ def main():
         print("Please enter c to cipher or d to decipher:")
         choice = input()
     mode = ''
-    while mode not in ('ecb', 'cbc'):
-        print("Please enter the block cipher mode of operation (ecb or cbc):")
+    while mode not in ('ecb', 'cbc', 'pcbc'):
+        print("Please enter the block cipher mode of operation (ecb, cbc or pcbc):")
         mode = input()
     key_dec = choose_key_size(choice)
     if choice == 'c':
