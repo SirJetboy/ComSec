@@ -23,15 +23,18 @@ while 1:
 	choix = input("choix:")
 
 	if choix == "1":
-		print("1- Générer clés RSA\n")
-		print("2- Générer clés DiffieHellman\n")
-		algo = input("choix:")	
-		
-		if algo == "1":
-			length = int(input("taille: "))
-			pub_key , priv_key = cert.gen_key(length)
-		elif algo == "2":
-			A, alpha, p = dh.gen_dh_key()
+		while 1:
+			print("1- Générer clés RSA\n")
+			print("2- Générer clés DiffieHellman\n")
+			algo = input("choix:")	
+			
+			if algo == "1":
+				length = int(input("taille: "))
+				pub_key , priv_key = cert.gen_key(length)
+				break
+			elif algo == "2":
+				A, alpha, p = dh.gen_dh_key()
+				break
 	
 	if choix == "2":
 		pub_key_utt , priv_key_utt = cert.gen_key(2048)
@@ -40,10 +43,17 @@ while 1:
 		dh.main("none")
 	
 	if choix == "4":
-		idead.main("c","none")
+		idead.main("c","none","n")
 	
 	if choix == "5":
-		idead.main("d","none")
+		while 1:
+			is_dh = input("Le fichier a t-il été chiffré avec une clé DH ? O/N:")
+			if is_dh == "O":
+				idead.main("d","none","y")
+				break
+			elif is_dh == "N":
+				idead.main("d","none","n")
+				break
 	
 	if choix == "6":
 		sha3.main("none","none")
@@ -51,7 +61,7 @@ while 1:
 	if choix == "7":
 		key = dh.main('fc')
 		print("-- Decryption --\n")
-		idead.main("fd",key)
+		idead.main("fd",key,"y")
 	
 	if choix == "8":
 		break

@@ -50,11 +50,12 @@ def main(choice):
 
 	if K_A == K_B:
 		print('Success')
+		print("Final shared key = ",K_A)
 		file_output = open("shared_key.txt", "w")
 		file_output.write(str(K_A))
 		if choice == 'fc':
 			print("-- Encryption --\n")
-			idead.main("fc",K_A)
+			idead.main("fc",K_A,"n")
 			return K_A
 		else:
 			choix = ""
@@ -62,7 +63,7 @@ def main(choice):
 				print("Voulez vous utiliser cette clé pour chiffrer un fichier ? O/N")
 				choix  = input()
 				if choix == "O":
-					idead.main("c",K_A)
+					idead.main("c",K_A,"n")
 	else:
 		print('Error')
 

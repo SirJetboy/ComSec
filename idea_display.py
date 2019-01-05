@@ -2,7 +2,7 @@ import idea
 from pathlib import Path
 import sha3 
 
-def choose_key_size(choice,key):
+def choose_key_size(choice,key,is_from_dh):
 	key_size = ''
 	while key_size not in (96, 128, 160, 256):
 		print("Please enter the key size (96, 128, 160 or 256):")
@@ -34,7 +34,11 @@ def choose_key_size(choice,key):
 		print("Please enter key:")
 		key = input()
 		if key.isdigit():
-			key = bin(int(key))[2:][-key_size:].zfill(key_size)
+			if is_from_dh == "n":
+				key = bin(int(key))[2:][-key_size:].zfill(key_size)
+			else:
+				key = sha3.main(key,key_size)
+			return key
 	return key
 
 
@@ -92,7 +96,7 @@ def decipher(key, mode, choice):
     file.close()
 
 
-def main(choice,key):
+def main(choice,key,is_from_dh):
 	if choice == "c":
 		print("-- Encryption --\n")
 	elif choice == "d":
@@ -101,7 +105,7 @@ def main(choice,key):
 	while mode not in ('ecb', 'cbc', 'pcbc'):
 		print("Please enter the block cipher mode of operation (ecb, cbc or pcbc):")
 		mode = input()
-	key_dec = choose_key_size(choice,key)
+	key_dec = choose_key_size(choice,key,is_from_dh)
 	if choice in ('c','fc') :
 		cipher(key_dec, mode, choice)
 	elif choice in ('d','fd'):
