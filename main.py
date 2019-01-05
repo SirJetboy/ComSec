@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-#def chiffrer_signer():
-	
-	
-
+import sha3 as sha3	
+import diffiehellman as dh
+import idea_display as idead
 
 
 while 1:
@@ -15,7 +14,9 @@ while 1:
 	print("	Partager une clé secrète (Press 3)\n")
 	print("	Utiliser une clé secrète pour chiffrer un message (et le signer) (Press 4)\n")
 	print("	Déchiffrer un message et vérifier la signature (Press 5)\n")
-	print("	La totale : THE FULL MONTY (Press 6)\n")
+	print("	Utiliser hashage SHA3 (Press 6)\n")
+	print("	La totale : THE FULL MONTY (Press 7)\n")
+	print("	Quitter (Press 8)\n")
 	print("choix:")
 	choix = input()
 
@@ -24,11 +25,17 @@ while 1:
 	if choix == "2":
 		authentifier()
 	if choix == "3":
-		partage()
+		dh.main("none")
 	if choix == "4":
-		chiffrer_signer()
+		idead.main("c","none")
 	if choix == "5":
-		dechiffrer()
+		idead.main("d","none")
 	if choix == "6":
-		totale()
-	break
+		sha3.main()
+	if choix == "7":
+		key = dh.main('fc')
+		print("-- Decryption --\n")
+		idead.main("fd",key)
+	if choix == "8":
+		break
+

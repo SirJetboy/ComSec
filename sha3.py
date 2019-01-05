@@ -63,7 +63,7 @@ def parity(string):
 
 
 #F function 
-def f_function(matrix):
+def f_function(matrix,L):
 	
 	#etape 1: xor avec bit de parité
 	#B[:, j, k] ← B[:, j, k] ⊕ parite(B[:, j, k − 1])
@@ -112,120 +112,129 @@ def f_function(matrix):
 	
 	return matrix
 
+def main():
+
+	print("--- SHA3 ---")
+
+	text_to_hash =""
+	print("Choose an option:\n")
+	print("	1- Hash the content of a file\n")
+	print("	2- Hash input text\n")
+
+	while 1:
+		choix = input("choice: ")
+		if choix == '1':
+			path=''
+			while not Path(path).is_file():
+				path = input("file path: ")
+			f = open(path, "r",encoding="ISO-8859-1")
+			text_to_hash = f.read() 
+			break
+		elif choix == '2':
+			text_to_hash = input("text to hash: ")
+			break
+		else:
+			print("Choose between both of the options, please.")
 
 
-print("--- SHA3 ---")
-
-text_to_hash =""
-print("Choose an option:\n")
-print("	1- Hash the content of a file\n")
-print("	2- Hash input text\n")
-
-while 1:
-	choix = input("choice: ")
-	if choix == '1':
-		path=''
-		while not Path(path).is_file():
-			path = input("file path: ")
-		f = open(path, "r",encoding="ISO-8859-1")
-		text_to_hash = f.read() 
-		break
-	elif choix == '2':
-		text_to_hash = input("text to hash: ")
-		break
-	else:
-		print("Choose between both of the options, please.")
-
-
-text_bin = str(bin(int(binascii.hexlify(bytes(text_to_hash, "utf8")), 16))[2:])
-print("Choose a hash length:\n")
-print("	1- 256 bits\n")
-print("	2- 384 bits\n")
-print("	3- 512 bits\n")
-
-while 1:
-	choix = input("choice: ")
-	if choix == '1':
-		hash_length = 256
-		break
-	elif choix == '2':
-		hash_length = 384
-		break
-	elif choix == '3':
-		hash_length = 512
-		break
-	else:
-		print("Choose between the three options, please.")
-
-print ("Hash length: ", hash_length ," bits.")
-
-
-print("\n--Parameters initialization--")
-
-#LFSR de 8 bits
-state = np.array([1, 0, 1, 0, 1, 0, 1, 0])
-L = lfsr.LFSR(fpoly=[8, 6, 4, 3, 2], initstate=state)
-
-size_c = 2 * hash_length
-block_size = 1600
-size_r = block_size - size_c
-
-print("taille bloc = 1600 bits, c = ", size_c , "bits, r = ", size_r,"bits") 
-text_bin = padding(text_bin,size_r)
-nb_iter_p = int(len(text_bin)/size_r)
-nb_iter_f = 24
-
-print("\n-- Start of the Hashing algorithm --")
-print("Computing...")
-
-#initialisation du premier bloc 5x5 de 64 bits à 0
-block_0 = [[["0" for k in range(64)] for j in range(5)] for i in range(5)]
-block_string = matrix_to_string(block_0)
-
-#ABSORPTION. 
-for i in range(0,nb_iter_p):
+	text_bin = str(bin(int(binascii.hexlify(bytes(text_to_hash, "utf8")), 16))[2:])
 	
-	ri = block_string[:size_r]
-	pi = text_bin[i * size_r:(i + 1) * size_r]
-	ri = xor(ri, pi)
-	block_string = ri + block_string[size_r:]
-	block_matrix = string_to_matrix(block_string)
 	
-	#Fonction f de permuation, debut des 24 iters.
-	for j in range(nb_iter_f):
-		block_matrix = f_function(block_matrix)
+	print("Choose a hash length:\n")
+	print("	1- 256 bits\n")
+	print("	2- 384 bits\n")
+	print("	3- 512 bits\n")
 
-block_string = matrix_to_string(block_matrix)
+	while 1:
+		choix = input("choice: ")
+		if choix == '1':
+			hash_length = 256
+			break
+		elif choix == '2':
+			hash_length = 384
+			break
+		elif choix == '3':
+			hash_length = 512
+			break
+		else:
+			print("Choose between the three options, please.")
+
+	print ("Hash length: ", hash_length ," bits.")
 
 
-#RECUPERATION
-#hash d'une taille hash_length bits. Fonction f appliqué m-1 avec m=p/r arrondie excès.
-m = ceil(hash_length/size_r)
-nb_iter_recup = m - 1
+	print("\n--Parameters initialization--")
 
-final_hash=""
+	#LFSR de 8 bits
+	state = np.array([1, 0, 1, 0, 1, 0, 1, 0])
+	L = lfsr.LFSR(fpoly=[8, 6, 4, 3, 2], initstate=state)
 
-if nb_iter_recup != 0:
-	for i in range(nb_iter_recup):
-		final_hash = final_hash + block_string[:size_r]
+	size_c = 2 * hash_length
+	block_size = 1600
+	size_r = block_size - size_c
+
+	print("taille bloc = 1600 bits, c = ", size_c , "bits, r = ", size_r,"bits") 
+	text_bin = padding(text_bin,size_r)
+	nb_iter_p = int(len(text_bin)/size_r)
+	nb_iter_f = 24
+
+	print("\n-- Start of the Hashing algorithm --")
+	print("Computing...")
+
+	#initialisation du premier bloc 5x5 de 64 bits à 0
+	block_0 = [[["0" for k in range(64)] for j in range(5)] for i in range(5)]
+	block_string = matrix_to_string(block_0)
+
+	#ABSORPTION. 
+	for i in range(0,nb_iter_p):
+		
+		ri = block_string[:size_r]
+		pi = text_bin[i * size_r:(i + 1) * size_r]
+		ri = xor(ri, pi)
+		block_string = ri + block_string[size_r:]
 		block_matrix = string_to_matrix(block_string)
-		block_matrix = f_function(block_matrix)
-		block_string = matrix_to_string(block_matrix)
-else:
-	final_hash = block_string[:size_r]
+		
+		#Fonction f de permuation, debut des 24 iters.
+		for j in range(nb_iter_f):
+			block_matrix = f_function(block_matrix,L)
 
-print("\n-- Ending --")
-
-final_hash_bin = final_hash[:hash_length]
-final_hash_hex = hex(int(final_hash_bin, 2))
-
-print("Binary final hash: ",final_hash_bin)
-print("Hexa final hash: ",final_hash_hex)
+	block_string = matrix_to_string(block_matrix)
 
 
-file_output = open("output_hash.txt", "w")
-file_output.write(final_hash_bin)
-file_output.write("\n")
-file_output.write(final_hash_hex)
-file_output.close()
-print("hashes have been saved in output_hash.txt")
+	#RECUPERATION
+	#hash d'une taille hash_length bits. Fonction f appliqué m-1 avec m=p/r arrondie excès.
+	m = ceil(hash_length/size_r)
+	nb_iter_recup = m - 1
+
+	final_hash=""
+
+	if nb_iter_recup != 0:
+		for i in range(nb_iter_recup):
+			final_hash = final_hash + block_string[:size_r]
+			block_matrix = string_to_matrix(block_string)
+			block_matrix = f_function(block_matrix)
+			block_string = matrix_to_string(block_matrix)
+	else:
+		final_hash = block_string[:size_r]
+
+	print("\n-- Ending --")
+
+	final_hash_bin = final_hash[:hash_length]
+	final_hash_hex = hex(int(final_hash_bin, 2))
+	final_hash_int = int(final_hash_bin, 2)
+	
+	print("Binary final hash: ",final_hash_bin)
+	print("Hexa final hash: ",final_hash_hex)
+	print("Int final hash: ",final_hash_int)
+
+
+	file_output = open("output_hash.txt", "w")
+	file_output.write(final_hash_bin)
+	file_output.write("\n")
+	file_output.write(final_hash_hex)
+	file_output.write("\n")
+	file_output.write(str(final_hash_int))
+	file_output.close()
+	print("hashes have been saved in output_hash.txt")
+
+
+#main()

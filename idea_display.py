@@ -2,54 +2,76 @@ import idea
 from pathlib import Path
 
 
-def choose_key_size(choice):
-    key_size = ''
-    while key_size not in (96, 128, 160, 256):
-        print("Please enter the key size (96, 128, 160 or 256):")
-        key_size = input()
-        if key_size.isdigit():
-            key_size = int(key_size)
-    if choice == 'c':
-        print("Please enter g to generate a key or anything else if not:")
-        if input() == 'g':
-            key = idea.generate_random_key(key_size)
-            print("key =", int(key, 2))
-            return key
-    key = ''
-    while not key.isdigit():
-        print("Please enter key:")
-        key = input()
-        if key.isdigit():
-            key = bin(int(key))[2:][-key_size:].zfill(key_size)
-    return key
+def choose_key_size(choice,key):
+	key_size = ''
+	while key_size not in (96, 128, 160, 256):
+		print("Please enter the key size (96, 128, 160 or 256):")
+		key_size = input()
+		if key_size.isdigit():
+			key_size = int(key_size)
+			
+	if choice == 'fd' or choice == 'fc':
+		key = bin(int(key))[2:][-key_size:].zfill(key_size)
+		return key
+	
+	if choice == 'c':
+		if key == "none":
+			print("Please enter g to generate a key or anything else if not:")
+			if input() == 'g':
+				key = idea.generate_random_key(key_size)
+				print("key =", int(key, 2))
+				return key
+			else:
+				print("Please enter key:")
+				key = input()
+				if key.isdigit():
+					key = bin(int(key))[2:][-key_size:].zfill(key_size)
+		else:
+			key = bin(int(key))[2:][-key_size:].zfill(key_size)
+			return key
+	else:
+		print("Please enter key:")
+		key = input()
+		if key.isdigit():
+			key = bin(int(key))[2:][-key_size:].zfill(key_size)
+	return key
 
 
-def choose_file():
-    path = ''
-    while not Path(path).is_file():
-        print("Please enter the name of the file:")
-        path = "idea/" + input()
-    file = open(path, "r", encoding="ISO-8859-1")
-    content = file.read()
-    file.close()
-    return content
+def choose_file(choice):
+	path = ''
+	while not Path(path).is_file():
+		if choice in ('c','fc'):
+			print("Please enter the name of the file to encrypt:")
+			path = "idea/" + input()
+		elif choice == 'd':
+			print("Please enter the name of the file to decrypt:")
+			path = "idea/" + input()
+		elif choice == 'fd':
+			path = "idea/encrypted"
+	file = open(path, "r", encoding="ISO-8859-1")
+	content = file.read()
+	file.close()
+	return content
 
 
-def cipher(key, mode):
-    message = choose_file()
-    path = ''
-    while not path:
-        print("Please enter the name of the output file:")
-        path = input()
-    path = "idea/" + path
-    file = open(path, "w", encoding="ISO-8859-1")
-    ciphered = idea.cipher(message, key, mode).replace("?", "??").replace(chr(13), "?r")
-    file.write(ciphered)
-    file.close()
+def cipher(key, mode, choice):
+	message = choose_file(choice)
+	path = ''
+	while not path:
+		if choice == 'c':
+			print("Please enter the name of the output file:")
+			path = input()
+		else:
+			path = "encrypted"
+	path = "idea/" + path
+	file = open(path, "w", encoding="ISO-8859-1")
+	ciphered = idea.cipher(message, key, mode).replace("?", "??").replace(chr(13), "?r")
+	file.write(ciphered)
+	file.close()
 
 
-def decipher(key, mode):
-    ciphered = choose_file()
+def decipher(key, mode, choice):
+    ciphered = choose_file(choice)
     i = 0
     while i != len(ciphered):
         if ciphered[i] == "?":
@@ -69,21 +91,20 @@ def decipher(key, mode):
     file.close()
 
 
-def main():
-    choice = ''
-    while choice not in ('c', 'd'):
-        print("Please enter c to cipher or d to decipher:")
-        choice = input()
-    mode = ''
-    while mode not in ('ecb', 'cbc', 'pcbc'):
-        print("Please enter the block cipher mode of operation (ecb, cbc or pcbc):")
-        mode = input()
-    key_dec = choose_key_size(choice)
-    if choice == 'c':
-        cipher(key_dec, mode)
-    else:
-        decipher(key_dec, mode)
-    print("Success")
+def main(choice,key):
+	if choice == "c":
+		print("-- Encryption --\n")
+	elif choice == "d":
+		print("-- Decryption --\n")
+	mode = ''
+	while mode not in ('ecb', 'cbc', 'pcbc'):
+		print("Please enter the block cipher mode of operation (ecb, cbc or pcbc):")
+		mode = input()
+	key_dec = choose_key_size(choice,key)
+	if choice in ('c','fc') :
+		cipher(key_dec, mode, choice)
+	elif choice in ('d','fd'):
+		decipher(key_dec, mode, choice)
+	print("Success")
 
-
-main()
+#main()
