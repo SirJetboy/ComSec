@@ -1,6 +1,6 @@
 import idea
 from pathlib import Path
-
+import sha3 
 
 def choose_key_size(choice,key):
 	key_size = ''
@@ -9,9 +9,10 @@ def choose_key_size(choice,key):
 		key_size = input()
 		if key_size.isdigit():
 			key_size = int(key_size)
-			
+	
+	#hash the shared_key with sha3 to get the good length
 	if choice == 'fd' or choice == 'fc':
-		key = bin(int(key))[2:][-key_size:].zfill(key_size)
+		key = sha3.main(key,key_size)
 		return key
 	
 	if choice == 'c':
@@ -27,7 +28,7 @@ def choose_key_size(choice,key):
 				if key.isdigit():
 					key = bin(int(key))[2:][-key_size:].zfill(key_size)
 		else:
-			key = bin(int(key))[2:][-key_size:].zfill(key_size)
+			key = sha3.main(key,key_size)
 			return key
 	else:
 		print("Please enter key:")

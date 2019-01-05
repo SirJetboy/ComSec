@@ -21,9 +21,11 @@ while 1:
 	choix = input()
 
 	if choix == "1":
-		generer_cle()
+		#generer_cle()
+		print("Pas encore implémenter")
 	if choix == "2":
-		authentifier()
+		#authentifier()
+		print("Pas encore implémenter")
 	if choix == "3":
 		dh.main("none")
 	if choix == "4":
@@ -31,7 +33,7 @@ while 1:
 	if choix == "5":
 		idead.main("d","none")
 	if choix == "6":
-		sha3.main()
+		sha3.main("none","none")
 	if choix == "7":
 		key = dh.main('fc')
 		print("-- Decryption --\n")

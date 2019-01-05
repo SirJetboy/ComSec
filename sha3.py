@@ -112,52 +112,64 @@ def f_function(matrix,L):
 	
 	return matrix
 
-def main():
-
-	print("--- SHA3 ---")
-
-	text_to_hash =""
-	print("Choose an option:\n")
-	print("	1- Hash the content of a file\n")
-	print("	2- Hash input text\n")
-
-	while 1:
-		choix = input("choice: ")
-		if choix == '1':
-			path=''
-			while not Path(path).is_file():
-				path = input("file path: ")
-			f = open(path, "r",encoding="ISO-8859-1")
-			text_to_hash = f.read() 
-			break
-		elif choix == '2':
-			text_to_hash = input("text to hash: ")
-			break
-		else:
-			print("Choose between both of the options, please.")
 
 
-	text_bin = str(bin(int(binascii.hexlify(bytes(text_to_hash, "utf8")), 16))[2:])
+
+def main(text_to_hash, hash_length):
 	
-	
-	print("Choose a hash length:\n")
-	print("	1- 256 bits\n")
-	print("	2- 384 bits\n")
-	print("	3- 512 bits\n")
+	print("\n--- SHA3 ---")
+	#Different of none when we use the sha3 to hash the shared_key from DH 
+	if text_to_hash == "none":
+		
+		print("--- SHA3 ---")
 
-	while 1:
-		choix = input("choice: ")
-		if choix == '1':
-			hash_length = 256
-			break
-		elif choix == '2':
-			hash_length = 384
-			break
-		elif choix == '3':
-			hash_length = 512
-			break
-		else:
-			print("Choose between the three options, please.")
+		text_to_hash =""
+		print("Choose an option:\n")
+		print("	1- Hash the content of a file\n")
+		print("	2- Hash input text\n")
+
+		while 1:
+			choix = input("choice: ")
+			if choix == '1':
+				path=''
+				while not Path(path).is_file():
+					path = input("file path: ")
+				f = open(path, "r",encoding="ISO-8859-1")
+				text_to_hash = f.read() 
+				break
+			elif choix == '2':
+				text_to_hash = input("text to hash: ")
+				break
+			else:
+				print("Choose between both of the options, please.")
+		
+		text_bin = str(bin(int(binascii.hexlify(bytes(text_to_hash, "utf8")), 16))[2:])
+	else:
+		text_to_hash = str(text_to_hash)
+		text_bin = str(bin(int(binascii.hexlify(bytes(text_to_hash, "utf8")), 16))[2:])
+	
+	#Different of none when we use the sha3 to hash the shared_key from DH
+	if hash_length == "none":
+		print("Choose a hash length:\n")
+		print("	1- 256 bits\n")
+		print("	2- 384 bits\n")
+		print("	3- 512 bits\n")
+
+		while 1:
+			choix = input("choice: ")
+			if choix == '1':
+				hash_length = 256
+				break
+			elif choix == '2':
+				hash_length = 384
+				break
+			elif choix == '3':
+				hash_length = 512
+				break
+			else:
+				print("Choose between the three options, please.")
+	else:
+		hash_length = hash_length
 
 	print ("Hash length: ", hash_length ," bits.")
 
@@ -220,21 +232,15 @@ def main():
 
 	final_hash_bin = final_hash[:hash_length]
 	final_hash_hex = hex(int(final_hash_bin, 2))
-	final_hash_int = int(final_hash_bin, 2)
-	
-	print("Binary final hash: ",final_hash_bin)
-	print("Hexa final hash: ",final_hash_hex)
-	print("Int final hash: ",final_hash_int)
-
 
 	file_output = open("output_hash.txt", "w")
 	file_output.write(final_hash_bin)
 	file_output.write("\n")
 	file_output.write(final_hash_hex)
-	file_output.write("\n")
-	file_output.write(str(final_hash_int))
 	file_output.close()
-	print("hashes have been saved in output_hash.txt")
+	print("hashes have been saved in output_hash.txt\n")
+
+	return  final_hash_bin
 
 
 #main()
