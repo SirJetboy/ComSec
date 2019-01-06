@@ -1,8 +1,9 @@
 import Crypto.Util.number as CUN
 import os
 import random 
+import sha3
 
-#Generate RSA pub and priv key
+#Génère paire de clés RSA, selon la taille choisie
 def gen_key():
 	print("Taille de la clé:\n")
 	print("	1- 1024 bits\n")
@@ -35,7 +36,33 @@ def gen_key():
 	#private key
 	d = CUN.inverse(e,phi)
 
-	return (hex(n),hex(e)), (hex(p), hex(q), hex(d))
+	return (n, e), d
 
 
-#def signer():
+#key_to_sign = dh, (A,alpha,p)
+#priv_key = rsa, d
+#pub_key = rsa, (n,e)
+def signer(key_to_sign,d,pub_key):
+	hashed_key = sha3.main(key_to_sign,256)
+	n,e = pub_key.split(':')
+	signature = pow(int(hashed_key,2),int(d),int(n))
+	return signature
+
+
+
+#Certificat = pub_dh + signature
+#pub_key = rsa, (n,e)
+def verifier(certificat,pub_key):
+	pub_dh,signature = certificat.split(':')
+	hashed_key = sha3.main(pub_dh,256)
+	n,e = pub_key.split(':')
+	
+	print("\nVérification de la signature...\n")
+	decipher = pow(int(signature),int(e),int(n))
+	hashed_key = int(hashed_key,2)
+
+
+	if decipher == hashed_key:
+		print("\nSignature vérifié, la signature provient bien de l'autorité de certification.")
+	else:
+		print("\nLa signature ne provient pas de l'autorité de cerification")

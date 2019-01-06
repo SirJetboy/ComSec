@@ -64,11 +64,13 @@ def main(choice):
 				choix  = input()
 				if choix == "O":
 					idead.main("c",K_A)
+				elif choix == "N":
+					break
 	else:
 		print('Error')
 
 
-
+#Génère une paire de clés DH
 def gen_dh_key():
 	print("Taille de la clé:\n")
 	print("	1- 1536 bits\n")
@@ -77,6 +79,8 @@ def gen_dh_key():
 	print("	4- 4096 bits\n")
 	while 1:
 		choix = input("Choix: ")
+		
+		#Prime fixe provenant de la RFC.
 		if choix == '1':
 			primeHex = "FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7EDEE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3DC2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F83655D23DCA3AD961C62F356208552BB9ED529077096966D670C354E4ABC9804F1746C08CA237327FFFFFFFFFFFFFFFF"
 			break
@@ -98,4 +102,4 @@ def gen_dh_key():
 	private_key_A = random.SystemRandom().getrandbits(512)
 	A = pow(generator, private_key_A, primeNum)
 	
-	return (hex(A), hex(generator), hex(primeNum)), hex(private_key_A)
+	return (A, generator, primeNum), private_key_A

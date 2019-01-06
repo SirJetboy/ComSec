@@ -6,24 +6,25 @@ from pathlib import Path
 
 
 
-#Padding function
+#Fonction de padding
 def padding(text_to_pad,size_r):
 	while len(text_to_pad) % size_r != 0:
 		text_to_pad = text_to_pad + "0"
 	text_pad = text_to_pad
 	return text_pad
 
-#Binary XOR
+#Fonction xor binaire
 def xor(a, b):
 	y = int(a, 2)^int(b,2)
 	return bin(y)[2:].zfill(len(a))
 
-#Binary AND
+#Fonction AND
 def bin_and(a, b):
 	y = a & b
 	return bin(y)[2:]
-	
-#Function to get a string from a matrix
+
+
+#FOntion permettant d'obtenir un string depuis une matrice
 def matrix_to_string(matrix):
 	string =''
 	for i in range(5):
@@ -31,7 +32,7 @@ def matrix_to_string(matrix):
 			string += ''.join(matrix[i][j][:])
 	return string
 
-#Function to get a matrix from a string
+#Fontion permettant d'obtenir une matrice depuis un string
 def string_to_matrix(string):
 	final_matrix = [[["0" for k in range(64)] for j in range(5)] for i in range(5)]
 	offset=0
@@ -43,7 +44,7 @@ def string_to_matrix(string):
 	return final_matrix
 	
 
-#Function to compute parity bit of a binary word
+#Fonction le bit de parité d'un mot binaire
 def parity(string):
 	count_bit_1 = 0
 	
@@ -114,14 +115,12 @@ def f_function(matrix,L):
 
 
 
-
+#Main du hashage, permet de choisir le texte à hasher, la taille du hash.
 def main(text_to_hash, hash_length):
 	
 	print("\n--- SHA3 ---")
 	#Different of none when we use the sha3 to hash the shared_key from DH 
 	if text_to_hash == "none":
-		
-		print("--- SHA3 ---")
 
 		text_to_hash =""
 		print("Choose an option:\n")
@@ -232,14 +231,8 @@ def main(text_to_hash, hash_length):
 
 	final_hash_bin = final_hash[:hash_length]
 	final_hash_hex = hex(int(final_hash_bin, 2))
-
-	file_output = open("output_hash.txt", "w")
-	file_output.write(final_hash_bin)
-	file_output.write("\n")
-	file_output.write(final_hash_hex)
-	file_output.close()
-	print("hashes have been saved in output_hash.txt\n")
-
+	print("Final hash = ", final_hash_bin)
+	
 	return  final_hash_bin
 
 

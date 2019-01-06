@@ -10,7 +10,6 @@ def choose_key_size(choice,key):
 		if key_size.isdigit():
 			key_size = int(key_size)
 	
-	#hash the shared_key with sha3 to get the good length
 	if choice == 'fd' or choice == 'fc':
 		key = sha3.main(key,key_size)
 		return key
@@ -33,7 +32,7 @@ def choose_key_size(choice,key):
 			return key
 	else:
 		while 1:
-			is_from_dh = input("Le fichier a t-il été chiffré avec une clé DH ? O/N:")
+			is_from_dh = input("Le fichier a t-il été chiffré avec une clé DH provenant de l'option 3 ? O/N:")
 			if is_from_dh == "N":
 				print("Please enter key:")
 				key = input()
