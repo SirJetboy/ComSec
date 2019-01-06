@@ -5,7 +5,7 @@ import sha3
 
 #Génère paire de clés RSA, selon la taille choisie
 def gen_key():
-	print("Taille de la clé:\n")
+	print("Taille des nombres premier:\n")
 	print("	1- 1024 bits\n")
 	print("	2- 2048 bits\n")
 	print("	3- 4096 bits\n")
@@ -35,7 +35,7 @@ def gen_key():
 	
 	#private key
 	d = CUN.inverse(e,phi)
-
+	
 	return (n, e), d
 
 
@@ -63,6 +63,6 @@ def verifier(certificat,pub_key):
 
 
 	if decipher == hashed_key:
-		print("\nSignature vérifié, la signature provient bien de l'autorité de certification.")
+		print("\nSignature vérifiée, la signature provient bien de l'autorité de certification.")
 	else:
-		print("\nLa signature ne provient pas de l'autorité de cerification")
+		print("\nLa signature ne provient pas de l'autorité de certification.")

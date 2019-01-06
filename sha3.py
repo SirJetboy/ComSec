@@ -123,12 +123,12 @@ def main(text_to_hash, hash_length):
 	if text_to_hash == "none":
 
 		text_to_hash =""
-		print("Choose an option:\n")
-		print("	1- Hash the content of a file\n")
-		print("	2- Hash input text\n")
+		print("Choisissez une option:\n")
+		print("	1- Hasher le contenu d'un fichier\n")
+		print("	2- Hasher un texte en entrée clavier\n")
 
 		while 1:
-			choix = input("choice: ")
+			choix = input("choix: ")
 			if choix == '1':
 				path=''
 				while not Path(path).is_file():
@@ -140,7 +140,7 @@ def main(text_to_hash, hash_length):
 				text_to_hash = input("text to hash: ")
 				break
 			else:
-				print("Choose between both of the options, please.")
+				print("Choisissez pami les deux options.")
 		
 		text_bin = str(bin(int(binascii.hexlify(bytes(text_to_hash, "utf8")), 16))[2:])
 	else:
@@ -149,7 +149,7 @@ def main(text_to_hash, hash_length):
 	
 	#Different of none when we use the sha3 to hash the shared_key from DH
 	if hash_length == "none":
-		print("Choose a hash length:\n")
+		print("Choisissez une longueur de hash:\n")
 		print("	1- 256 bits\n")
 		print("	2- 384 bits\n")
 		print("	3- 512 bits\n")
@@ -166,7 +166,7 @@ def main(text_to_hash, hash_length):
 				hash_length = 512
 				break
 			else:
-				print("Choose between the three options, please.")
+				print("Choisissez pami les trois options.")
 	else:
 		hash_length = hash_length
 
@@ -188,8 +188,8 @@ def main(text_to_hash, hash_length):
 	nb_iter_p = int(len(text_bin)/size_r)
 	nb_iter_f = 24
 
-	print("\n-- Start of the Hashing algorithm --")
-	print("Computing...")
+	print("\n-- Début de l'algorithme --")
+	print("Calcul...")
 
 	#initialisation du premier bloc 5x5 de 64 bits à 0
 	block_0 = [[["0" for k in range(64)] for j in range(5)] for i in range(5)]
@@ -227,13 +227,13 @@ def main(text_to_hash, hash_length):
 	else:
 		final_hash = block_string[:size_r]
 
-	print("\n-- Ending --")
+	print("\n-- FIN --")
 
 	final_hash_bin = final_hash[:hash_length]
 	final_hash_hex = hex(int(final_hash_bin, 2))
-	print("Final hash = ", final_hash_bin)
+	final_hash_int = int(final_hash_bin, 2)
 	
+	print("Final hash bin = ", final_hash_bin)
+	print("Final hash hex = ", final_hash_hex)
+	print("Final hash int = ", final_hash_int)
 	return  final_hash_bin
-
-
-#main()

@@ -43,12 +43,12 @@ while 1:
 				pub_key , priv_key = dh.gen_dh_key()
 				print("Public key = ",pub_key)
 				print("Private key = ",priv_key)
-				file_output = open("pub_dh_key.txt", "w")
+				file_output = open("key_cert/pub_dh_key.txt", "w")
 				file_output.write(str(pub_key[0]))
 				file_output.write(str(pub_key[1]))
 				file_output.write(str(pub_key[2]))
 				file_output.close()
-				print("La clé publique a été sauvegardé dans pub_dh_key.txt")
+				print("\nLa clé publique a été sauvegardé dans key_cert/pub_dh_key.txt")
 				break
 			elif algo == "3":
 				break
@@ -64,10 +64,10 @@ while 1:
 			#Génère clés de l'autorité et les stocke
 			if choix2 == "1":
 				pub_key_utt , priv_key_utt = cert.gen_key()
-				file_output = open("utt_priv_key.txt", "w")
+				file_output = open("key_cert/utt_priv_key.txt", "w")
 				file_output.write(str(priv_key_utt))
 				file_output.close()
-				file_output = open("utt_pub_key.txt", "w")
+				file_output = open("key_cert/utt_pub_key.txt", "w")
 				file_output.write(str(pub_key_utt[0]))
 				file_output.write(":")
 				file_output.write(str(pub_key_utt[1]))
@@ -80,35 +80,37 @@ while 1:
 				file_key=''
 				while not Path(file_key).is_file():
 					file_key = input("fichier contenant clé DH à signer:")	
+					file_key = "key_cert/" + file_key
 				file = open(file_key, "r")
 				dh_key = file.read()
 				file.close()
-				file = open("utt_priv_key.txt", "r")
+				file = open("key_cert/utt_priv_key.txt", "r")
 				priv_utt = file.read()
 				file.close()
-				file = open("utt_pub_key.txt", "r")
+				file = open("key_cert/utt_pub_key.txt", "r")
 				pub_utt = file.read()
 				file.close()
 				signature = cert.signer(dh_key,priv_utt,pub_utt)
-				print("Signature de la clé = ",signature)
-				certif = open("cert_user.txt", "w")
+				print("\nSignature de la clé = ",signature)
+				certif = open("key_cert/cert_user.txt", "w")
 				certif.write(str(dh_key))
 				certif.write(":")
 				certif.write(str(signature))
 				certif.close()
-				print("\nCertificat stocké dans cert_user.txt")
+				print("\nCertificat stocké dans key_cert/cert_user.txt")
 				break
 				
 			#Vérifier signature avec clé publique de l'autorité
 			elif choix2 == "3":
 				file_cert=''
 				while not Path(file_cert).is_file():
-					file_cert = input("fichier contenant le certificat à vérifier:")	
+					file_cert = input("fichier contenant le certificat à vérifier:")
+					file_cert = "key_cert/" + file_cert	
 				file = open(file_cert, "r")
 				certif = file.read()
 				file.close()
 				print("\nRécupération de la clé publique de l'autorité...\n")
-				file = open("utt_pub_key.txt", "r")
+				file = open("key_cert/utt_pub_key.txt", "r")
 				pub_utt = file.read()
 				file.close()
 				cert.verifier(certif,pub_utt)
