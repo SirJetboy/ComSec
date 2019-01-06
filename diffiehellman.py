@@ -51,7 +51,7 @@ def main(choice):
 	if K_A == K_B:
 		print('Success')
 		print("Final shared key = ",K_A)
-		file_output = open("shared_key.txt", "w")
+		file_output = open("shared_key/shared_key.txt", "w")
 		file_output.write(str(K_A))
 		if choice == 'fc':
 			print("-- Encryption --\n")
@@ -72,7 +72,7 @@ def main(choice):
 
 #Génère une paire de clés DH
 def gen_dh_key():
-	print("Taille de la clé:\n")
+	print("Taille du nombre premier:\n")
 	print("	1- 1536 bits\n")
 	print("	2- 2048 bits\n")
 	print("	3- 3072 bits\n")

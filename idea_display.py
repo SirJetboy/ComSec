@@ -51,10 +51,10 @@ def choose_file(choice):
 	path = ''
 	while not Path(path).is_file():
 		if choice in ('c','fc'):
-			print("Please enter the name of the file to encrypt:")
+			print("\nPlease enter the name of the file to encrypt:")
 			path = "idea/" + input()
 		elif choice == 'd':
-			print("Please enter the name of the file to decrypt:")
+			print("\nPlease enter the name of the file to decrypt:")
 			path = "idea/" + input()
 		elif choice == 'fd':
 			path = "idea/encrypted"
