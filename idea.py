@@ -1,20 +1,25 @@
 import random
 
 
+# string message to binary message
+# input: string, output: string
 def message_to_bin(message):
     bin_message = ''.join([bin(ord(x))[2:].zfill(8) for x in message])
     while len(bin_message) % 64 != 0:
         bin_message = "0" + bin_message
-
     return bin_message
 
 
+# binary message to string message
+# input: list of string, output: string
 def bin_to_message(bin_blocs):
     bin_message = ''.join(bin_blocs)
     bin_blocs = [bin_message[i:i + 8] for i in range(0, len(bin_message), 8)]
     return ''.join([chr(int(x, 2)) for x in bin_blocs])
 
 
+# generate a random key
+# input: int, output: string
 def generate_random_key(key_size):
     original_key = ''
     for i in range(key_size):
@@ -22,6 +27,8 @@ def generate_random_key(key_size):
     return original_key
 
 
+# create the encryption keys for IDEA
+# input: string, output: list of string
 def create_encryption_keys(original_key):
     key_bis = original_key
     key = []
@@ -37,6 +44,8 @@ def create_encryption_keys(original_key):
     return key
 
 
+# create the decryption keys for IDEA
+# input: list of string, output: list of string
 def create_decryption_keys(original_key):
     key = create_encryption_keys(original_key)
     dec_key = list()
@@ -60,6 +69,8 @@ def create_decryption_keys(original_key):
     return dec_key
 
 
+# create blocs for encryption
+# input: string, output: list of string
 def create_blocs(bin_message):
     bloc = []
     while len(bin_message) != 0:
@@ -68,10 +79,14 @@ def create_blocs(bin_message):
     return bloc
 
 
+# add two numbers modulo 65536
+# input: (string, string), output: string
 def add(a, b):
     return bin((int(a, 2) + int(b, 2)) % 65536)[2:][-16:].zfill(16)
 
 
+# multiply two numbers modulo 65537
+# input: (string, string), output: string
 def mul(a, b):
     if int(a, 2) == 0:
         a = '10000000000000000'
@@ -80,14 +95,20 @@ def mul(a, b):
     return bin(int(a, 2) * int(b, 2) % 65537)[2:][-16:].zfill(16)
 
 
+# xor two numbers modulo 65536
+# input: (string, string), output: string
 def xor(a, b):
     return bin(int(a, 2) ^ int(b, 2))[2:][-16:].zfill(16)
 
 
+# compute the additive inverse modulo 65536
+# input: string, output: string
 def opp(a):
     return bin(- int(a,2) % 65536)[2:][-16:].zfill(16)
 
 
+# compute the multiplicative inverse modulo 65537
+# input: string, output: string
 def inv(a):
     a = int(a, 2)
     x0, x1, y0, y1, b = 1, 0, 0, 1, 65537
@@ -99,6 +120,8 @@ def inv(a):
     return bin(x0 % mod)[2:][-16:].zfill(16)
 
 
+# IDEA algorithm
+# input: (list of string, list of string), output: list of string
 def code(bloc, key):
     temp = ['', '']
     for i in range(8):
@@ -145,6 +168,8 @@ def code(bloc, key):
     return bloc
 
 
+# cipher function
+# input: (string, string, string), output: string
 def cipher(message, key, mode):
     bin_message = message_to_bin(message)
     blocs = create_blocs(bin_message)
@@ -181,6 +206,8 @@ def cipher(message, key, mode):
     return ciphered_message
 
 
+# decipher function
+# input: (string, string, string), output: string
 def decipher(message, key, mode):
     bin_message = message_to_bin(message)
     blocs = create_blocs(bin_message)

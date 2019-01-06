@@ -2,7 +2,10 @@ import idea
 from pathlib import Path
 import sha3 
 
-def choose_key_size(choice,key):
+
+# to choose the key size if necessary
+# input: (string, string), output: string
+def choose_key_size(choice, key):
 	key_size = ''
 	while key_size not in (96, 128, 160, 256):
 		print("Please enter the key size (96, 128, 160 or 256):")
@@ -47,6 +50,8 @@ def choose_key_size(choice,key):
 					return key
 
 
+# to choose and read the content of a file
+# input: string, output: string
 def choose_file(choice):
 	path = ''
 	while not Path(path).is_file():
@@ -64,6 +69,8 @@ def choose_file(choice):
 	return content
 
 
+# cipher function
+# input: (string, string, string)
 def cipher(key, mode, choice):
 	message = choose_file(choice)
 	path = ''
@@ -80,6 +87,8 @@ def cipher(key, mode, choice):
 	file.close()
 
 
+# decipher function
+# input: (string, string, string)
 def decipher(key, mode, choice):
     ciphered = choose_file(choice)
     i = 0
@@ -101,6 +110,8 @@ def decipher(key, mode, choice):
     file.close()
 
 
+# main display
+# input: (string, string)
 def main(choice,key):
 	if choice == "c":
 		print("-- Encryption --\n")
@@ -116,5 +127,3 @@ def main(choice,key):
 	elif choice in ('d','fd'):
 		decipher(key_dec, mode, choice)
 	print("Success")
-
-#main()
