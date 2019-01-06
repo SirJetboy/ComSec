@@ -29,13 +29,15 @@ while 1:
 			algo = input("choix:")	
 			
 			if algo == "1":
-				length = int(input("taille: "))
-				pub_key , priv_key = cert.gen_key(length)
+				pub_key , priv_key = cert.gen_key()
+				print("Public key = ",pub_key)
+				print("Private key = ",priv_key)
 				break
 			elif algo == "2":
-				A, alpha, p = dh.gen_dh_key()
+				pub_key , priv_key = dh.gen_dh_key()
+				print("Public key = ",pub_key)
+				print("Private key = ",priv_key)
 				break
-	
 	if choix == "2":
 		pub_key_utt , priv_key_utt = cert.gen_key(2048)
 	
@@ -43,17 +45,10 @@ while 1:
 		dh.main("none")
 	
 	if choix == "4":
-		idead.main("c","none","n")
+		idead.main("c","none")
 	
 	if choix == "5":
-		while 1:
-			is_dh = input("Le fichier a t-il été chiffré avec une clé DH ? O/N:")
-			if is_dh == "O":
-				idead.main("d","none","y")
-				break
-			elif is_dh == "N":
-				idead.main("d","none","n")
-				break
+		idead.main("d","none")
 	
 	if choix == "6":
 		sha3.main("none","none")
@@ -61,7 +56,7 @@ while 1:
 	if choix == "7":
 		key = dh.main('fc')
 		print("-- Decryption --\n")
-		idead.main("fd",key,"y")
+		idead.main("fd",key)
 	
 	if choix == "8":
 		break
